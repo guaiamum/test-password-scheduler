@@ -1,0 +1,1 @@
+module.exports = URL = 'https://adpasswordchange.ptc.lan/index_test.php';
