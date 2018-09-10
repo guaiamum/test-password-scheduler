@@ -29,7 +29,7 @@ const puppeteer = require('puppeteer');
   });
 
   if (success) {
-    console.log('\n\n', success);
+    console.log('\n\n', getDate(success));
   }
 
   if (!DEBUG)
@@ -37,3 +37,16 @@ const puppeteer = require('puppeteer');
 
   return;
 })()
+
+function getParagraphs(str) {
+  return str.match(/<p>.*?<\/p>/g);
+}
+
+function getParagraphContent(str) {
+  return getParagraphs(str).map((e)=>e.replace(/<p>|<\/p>/g,''));
+}
+
+function getDate(str) {
+  const contentArray = getParagraphContent(str);
+  return contentArray[1].substr(contentArray.length-12);
+}
