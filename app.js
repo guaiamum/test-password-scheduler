@@ -1,5 +1,6 @@
 const DEBUG = false;
-const info = require('./info.js');
+const { URL, USER, USER_FIELD, PASS, PASS_FIELD, SUBMIT_BUTTON, SUCCESS_SELECTOR} = require('./info.js');
+const { getParagraphsContent } = require('./helpers.js');
 const puppeteer = require('puppeteer');
 const { exec } = require('child_process');
 
@@ -8,23 +9,23 @@ const { exec } = require('child_process');
   const page = await browser.newPage();
 
   await page.setViewport({ width: 1280, height: 800 });
-  await page.goto(info.URL);
+  await page.goto(URL);
 
   //populates fields
-  await page.focus(info.USER_FIELD);
-  await page.keyboard.type(info.USER);
-  await page.focus(info.PASS_FIELD);
-  await page.keyboard.type(info.PASS);
+  await page.focus(USER_FIELD);
+  await page.keyboard.type(USER);
+  await page.focus(PASS_FIELD);
+  await page.keyboard.type(PASS);
 
   //submitting form
-  await Promise.all([page.evaluate((info) => {
-      return document.querySelector(info.SUBMIT_BUTTON).click();
-    }, info),
+  await Promise.all([page.evaluate((SUBMIT_BUTTON) => {
+      return document.querySelector(SUBMIT_BUTTON).click();
+    }, SUBMIT_BUTTON),
     page.waitForNavigation()
   ]);
 
   //fetching  result
-  const success = await page.$eval(info.SUCCESS_SELECTOR, (el) => el.outerHTML || null).catch((err) => {
+  const success = await page.$eval(SUCCESS_SELECTOR, (el) => el.outerHTML || null).catch((err) => {
     console.log('\nErro ao fazer Login! Reveja suas credenciais!');
     return false;
   });
@@ -48,16 +49,3 @@ const { exec } = require('child_process');
   console.log('Bye :)');
   return;
 })()
-
-function getParagraphs(str) {
-  return str.match(/<p>.*?<\/p>/g);
-}
-
-function getParagraphsContent(str) {
-  return getParagraphs(str).map((e)=>e.replace(/<p>|<\/p>/g,''));
-}
-
-function getDate(str) {
-  const contentArray = getParagraphsContent(str);
-  return contentArray[1].substr(contentArray.length-12);
-}
