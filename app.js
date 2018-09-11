@@ -41,9 +41,11 @@ const { exec } = require('child_process');
     exec(`${shell} \'${message}\'`)
   }
 
-  if (!DEBUG)
+  if (!DEBUG){
     await browser.close();
+  }
 
+  console.log('Bye :)');
   return;
 })()
 
