@@ -1,6 +1,6 @@
 const DEBUG = false;
 const { URL, USER, USER_FIELD, PASS, PASS_FIELD, SUBMIT_BUTTON, SUCCESS_SELECTOR } = require('./info.js');
-const { getParagraphsContent } = require('./helpers.js');
+const { getParagraphsContent, getDate } = require('./helpers.js');
 const puppeteer = require('puppeteer');
 const { exec } = require('child_process');
 
@@ -25,21 +25,23 @@ const { exec } = require('child_process');
   ]);
 
   //fetching  result
-  const success = await page.$eval(SUCCESS_SELECTOR, (el) => el.outerHTML || null).catch((err) => {
-    console.log('\nErro ao fazer Login! Reveja suas credenciais!');
-    return false;
-  });
+  const success = await page.$eval(SUCCESS_SELECTOR, (el) => el.outerHTML || null).catch((err) => false);
 
-  if (success) {
-    let message = 'Hi';
-    let shell = '';
-
-    if(process.platform === 'linux') {
-      shell = '/usr/bin/notify-send';
-      message = getParagraphsContent(success)[1];
-    }
+  if (process.platform === 'linux') {
+    let shell = '/usr/bin/notify-send';
+    let title = '';
+    let message = 'Tap this to close';
     
-    exec(`${shell} \'${message}\'`)
+    if(!success){
+      title = 'Login ERROR! Review your credentials!';
+    } else {
+      let paragraphs = getParagraphsContent(success);
+      let expiringDate = getDate(paragraphs);
+      let now = new Date(), nextWeek = now.setDate(now.getDate()+7);
+      title = expiringDate <= nextWeek ? `Your password expires SOON (${expiringDate.toUTCString().substring(0,16)})!` : paragraphs[1];
+    }
+
+    exec(`${shell} '${title}' '${message}'`);
   }
 
   if (!DEBUG){
