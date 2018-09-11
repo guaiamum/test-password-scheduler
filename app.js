@@ -1,5 +1,5 @@
 const DEBUG = false;
-const { URL, USER, USER_FIELD, PASS, PASS_FIELD, SUBMIT_BUTTON, SUCCESS_SELECTOR} = require('./info.js');
+const { URL, USER, USER_FIELD, PASS, PASS_FIELD, SUBMIT_BUTTON, SUCCESS_SELECTOR } = require('./info.js');
 const { getParagraphsContent } = require('./helpers.js');
 const puppeteer = require('puppeteer');
 const { exec } = require('child_process');
@@ -35,7 +35,7 @@ const { exec } = require('child_process');
     let shell = '';
 
     if(process.platform === 'linux') {
-      shell = 'notify-send';
+      shell = '/usr/bin/notify-send';
       message = getParagraphsContent(success)[1];
     }
     
